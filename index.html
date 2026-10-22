@@ -1786,10 +1786,10 @@ body.kb .tabbar { display: none; }
   }
 
   /* ---------- nomes aleatórios ---------- */
-  var NOUNS = [['Baralho', 0], ['Coringa', 0], ['Valete', 0], ['Rei', 0], ['Naipe', 0], ['Truco', 0], ['Blefe', 0], ['Trunfo', 0], ['Ás', 0], ['Dado', 0], ['Tarô', 0], ['Pôquer', 0],
-    ['Dama', 1], ['Manilha', 1], ['Mão', 1], ['Mesa', 1], ['Carta', 1], ['Jogada', 1], ['Aposta', 1], ['Roleta', 1], ['Sorte', 1], ['Cartola', 1], ['Ficha', 1], ['Paciência', 1]];
+  var NOUNS = [['Baralho', 0], ['Coringa', 0], ['Valete', 0], ['Rei', 0], ['Naipe', 0], ['Trunfo', 0], ['Ás', 0], ['Tarô', 0], ['Truco', 0],
+    ['Dama', 1], ['Manilha', 1], ['Mão', 1], ['Mesa', 1], ['Carta', 1], ['Jogada', 1], ['Paciência', 1]];
   var ADJS = [['Veloz', 'Veloz'], ['Calmo', 'Calma'], ['Brilhante', 'Brilhante'], ['Azul', 'Azul'], ['Curioso', 'Curiosa'], ['Secreto', 'Secreta'], ['Suave', 'Suave'], ['Firme', 'Firme'], ['Leve', 'Leve'], ['Dourado', 'Dourada'],
-    ['Distraído', 'Distraída'], ['Sonolento', 'Sonolenta'], ['Matreiro', 'Matreira'], ['Atrapalhado', 'Atrapalhada'], ['Desconfiado', 'Desconfiada'], ['Teimoso', 'Teimosa'], ['Faceiro', 'Faceira'], ['Esperto', 'Esperta'], ['Folgado', 'Folgada'], ['Misterioso', 'Misteriosa'], ['Travesso', 'Travessa'], ['Elegante', 'Elegante']];
+    ['Discreto', 'Discreta'], ['Sereno', 'Serena'], ['Antigo', 'Antiga'], ['Raro', 'Rara'], ['Nobre', 'Nobre'], ['Silencioso', 'Silenciosa'], ['Elegante', 'Elegante'], ['Claro', 'Clara']];
   function normName(s) { return String(s).trim().toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[̀-ͯ]/g, ''); }
   function nameTaken(name, excludeId) {
     var k = normName(name);
