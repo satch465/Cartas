@@ -324,6 +324,7 @@ button:disabled { cursor: default; }
 @keyframes barGo { from { width: 0; } to { width: 100%; } }
 .sheet { animation: sheetIn .24s cubic-bezier(.2, .8, .2, 1); }
 .sheet:focus { outline: none; }
+.sheet::before { content: ''; position: absolute; top: 8px; left: 50%; width: 36px; height: 4px; margin-left: -18px; border-radius: 2px; background: var(--line); }
 .scrim { animation: fadeIn .2s ease-out; }
 .toast { animation: toastIn .2s ease-out; }
 .app.enter { animation: viewIn .22s ease-out; }
@@ -336,11 +337,14 @@ button:disabled { cursor: default; }
 .splash-in { display: flex; flex-direction: column; align-items: center; gap: 32px; }
 .splash-bar { width: 84px; height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
 .splash-bar i { display: block; height: 100%; width: 0; background: var(--accent); animation: barGo 1.1s cubic-bezier(.4, 0, .2, 1) forwards; }
-.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; justify-content: center; gap: 8px; background: var(--bg); border-top: 1px solid var(--line); padding: 4px 16px calc(4px + env(safe-area-inset-bottom, 0px)); }
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; justify-content: center; gap: 12px; background: var(--bg); border-top: 1px solid var(--line); padding: 4px 16px calc(4px + env(safe-area-inset-bottom, 0px)); }
 .tab { flex: 1; max-width: 150px; min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 8px; font: 500 11px/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
 .tab i { width: 6px; height: 6px; border-radius: 50%; border: 1px solid currentColor; }
 .tab[aria-current="page"] { color: var(--ink); }
 .tab[aria-current="page"] i { background: var(--accent); border-color: var(--accent); }
+.tab:not(.new) { background: var(--bg); border-radius: 26px; min-height: 38px; margin: 6px 0; box-shadow: 5px 1.5px 10px var(--shade), -5px -1.5px 10px var(--glow); }
+.tab:not(.new):active { box-shadow: 2px 1px 5px var(--shade), -2px -1px 5px var(--glow); transform: scale(.985); }
+@media (prefers-reduced-motion: reduce) { .tab:not(.new):active { transform: none; } }
 .tab.new { flex: none; width: 104px; background: var(--accent); color: var(--accent-ink); font-weight: 700; margin: 6px 0; min-height: 38px; border-radius: 26px; }
 /* Relevo: a face é lisa e a sombra nasce da borda para fora. A luz vem da esquerda: brilho à esquerda, sombra à direita. */
 .btn.primary, .tab.new, .btn:not(.danger):not(:disabled), .round { background-image: none; box-shadow: 7px 2px 14px var(--shade), -7px -2px 14px var(--glow); }
@@ -766,8 +770,53 @@ body.kb .tabbar { display: none; }
   function openSheet(inner) {
     if (!sheetRoot.firstChild) lastFocus = document.activeElement;
     var sh = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', tabindex: '-1' }, inner);
-    sheetRoot.replaceChildren(h('div', { class: 'scrim', onclick: closeSheet }), sh);
+    var scrim = h('div', { class: 'scrim', onclick: closeSheet });
+    sheetRoot.replaceChildren(scrim, sh);
     try { sh.focus({ preventScroll: true }); } catch (e) {}
+    enableSwipeClose(sh, scrim);
+  }
+  /* Arrastar a folha para baixo fecha. Só começa se a folha estiver no topo, para não brigar com a rolagem. */
+  function enableSwipeClose(sh, scrim) {
+    var y0 = 0, dy = 0, drag = false, armed = false, t0 = 0;
+    function scrolledInside(el) {
+      for (; el && el !== sh.parentNode; el = el.parentNode) {
+        if (el.nodeType === 1 && el.scrollHeight > el.clientHeight + 1 && el.scrollTop > 0) return true;
+        if (el === sh) break;
+      }
+      return false;
+    }
+    function begin(y, target) {
+      if (target && target.closest && target.closest('input, textarea, canvas, select')) return;
+      armed = !scrolledInside(target); y0 = y; dy = 0; drag = false; t0 = Date.now();
+    }
+    function move(y, ev) {
+      if (!armed) return;
+      dy = y - y0;
+      if (!drag) { if (dy > 8) { drag = true; sh.style.transition = 'none'; sh.style.animation = 'none'; } else { if (dy < -8) armed = false; return; } }
+      if (ev && ev.cancelable) ev.preventDefault();
+      var d = Math.max(0, dy);
+      sh.style.transform = 'translateY(' + d + 'px)';
+      scrim.style.opacity = String(Math.max(0, 1 - d / Math.max(200, sh.offsetHeight)));
+    }
+    function end() {
+      if (!drag) { armed = false; return; }
+      drag = false; armed = false;
+      var fast = dy / Math.max(1, Date.now() - t0) > 0.6;
+      sh.style.transition = 'transform .2s ease';
+      if (dy > 110 || (fast && dy > 40)) {
+        sh.style.transform = 'translateY(105%)'; scrim.style.transition = 'opacity .2s ease'; scrim.style.opacity = '0';
+        setTimeout(closeSheet, 190);
+      } else {
+        sh.style.transform = 'none'; scrim.style.opacity = '';
+      }
+    }
+    sh.addEventListener('touchstart', function (e) { if (e.touches.length === 1) begin(e.touches[0].clientY, e.target); }, { passive: true });
+    sh.addEventListener('touchmove', function (e) { if (e.touches.length === 1) move(e.touches[0].clientY, e); }, { passive: false });
+    sh.addEventListener('touchend', end);
+    sh.addEventListener('touchcancel', end);
+    sh.addEventListener('mousedown', function (e) { if (e.button === 0) begin(e.clientY, e.target); });
+    document.addEventListener('mousemove', function mm(e) { if (!sh.isConnected) { document.removeEventListener('mousemove', mm); return; } if (e.buttons === 1) move(e.clientY, e); });
+    document.addEventListener('mouseup', function mu() { if (!sh.isConnected) { document.removeEventListener('mouseup', mu); return; } end(); });
   }
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSheet(); });
   function confirmSheet(title, okLabel, onOk) {
