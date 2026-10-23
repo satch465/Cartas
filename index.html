@@ -60,6 +60,9 @@ button:disabled { cursor: default; }
 
 /* Home */
 .masthead { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px 0 16px; flex-wrap: wrap; }
+/* Nada de seleção de texto nem menu de copiar/colar ao segurar a tela; só nos campos de digitar. */
+html, body, #app, .sheet, .toast, img, svg, canvas, button { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+input, textarea, [contenteditable="true"] { -webkit-touch-callout: default; -webkit-user-select: text; user-select: text; }
 .masthead .status { flex: 0 0 100%; padding-bottom: 0; }
 .brand { font: 800 34px/1 var(--f-display); letter-spacing: -.03em; margin: 8px 0 0; text-wrap: balance; }
 .label.pos { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--ink); }
@@ -195,6 +198,10 @@ button:disabled { cursor: default; }
 /* Editor de deck */
 .name-input { width: 100%; min-height: 52px; padding: 0 16px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--panel); color: var(--ink); font: 700 22px/1 var(--f-display); letter-spacing: -.02em; margin-top: 8px; }
 .name-input:focus { border-color: var(--ink); outline: none; }
+.lib-search::-webkit-search-cancel-button, .lib-search::-webkit-search-decoration { -webkit-appearance: none; appearance: none; display: none; }
+.search-x { position: absolute; right: 4px; top: 50%; width: 44px; height: 44px; margin-top: -22px; display: flex; align-items: center; justify-content: center; color: var(--ink-2); border-radius: 50%; }
+.search-x[hidden] { display: none; }
+.search-x:active { color: var(--ink); }
 .name-field { position: relative; margin-top: 8px; }
 .name-field .name-input { margin-top: 0; padding-right: 104px; text-overflow: ellipsis; }
 .name-actions { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); display: flex; }
@@ -226,7 +233,8 @@ button:disabled { cursor: default; }
 .tile.lib { background: var(--panel); border: 1.5px solid var(--ink); }
 .tile.lib .tile-name { padding-right: 0; }
 .lib-area { margin: 24px 0 8px; }
-.lib-search { margin: 8px 0 16px; padding-right: 16px; min-height: 48px; font: 500 17px/1 var(--f-body); letter-spacing: 0; }
+.search-box { position: relative; margin: 8px 0 16px; }
+.lib-search { margin: 0; padding-right: 48px; min-height: 48px; font: 500 17px/1 var(--f-body); letter-spacing: 0; }
 .lib-go { margin-left: auto; color: var(--ink-2); display: inline-flex; }
 .lib-info { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .lib-name { font: 700 19px/1.1 var(--f-display); letter-spacing: -.02em; overflow-wrap: anywhere; }
@@ -284,6 +292,12 @@ button:disabled { cursor: default; }
 .mark[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 .mark.yes[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .marks-row { display: flex; gap: 12px; margin: 24px auto 0; width: min(100%, max(240px, calc((100dvh - var(--reserve, 270px)) * .8))); }
+.marks-row { justify-content: center; gap: 16px; margin-top: 16px; }
+.mark-pill { flex: 1; min-height: 38px; display: flex; align-items: center; justify-content: center; padding: 0 16px; border: 0; border-radius: 26px; background: var(--bg); color: var(--ink-2); font: 500 11px/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; box-shadow: 5px 1.5px 10px var(--shade), -5px -1.5px 10px var(--glow); }
+.mark-pill.yes { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.mark-pill:active:not(:disabled) { box-shadow: 2px 1px 5px var(--shade), -2px -1px 5px var(--glow); transform: scale(.985); }
+.mark-pill:disabled { opacity: .5; }
+@media (prefers-reduced-motion: reduce) { .mark-pill:active { transform: none; } }
 .marks-row .btn { flex: 1 1 0; min-width: 0; }
 .res-box { margin-top: 16px; }
 .res-box:empty { display: none; }
@@ -298,15 +312,20 @@ button:disabled { cursor: default; }
 
 .ans { position: absolute; inset: 0; display: flex; }
 .modeswitch { display: flex; justify-content: center; align-items: center; gap: 16px; margin: 8px 0 12px; flex-wrap: wrap; }
-.pager { margin: 0 0 8px; gap: 8px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
-.pager .led-toggle:first-child { justify-self: start; }
-.pager .led-toggle:last-child { justify-self: end; }
-.test-row .label { min-width: 13ch; text-align: center; }
-.pager .label { min-width: 20ch; text-align: center; }
-.pager .led-toggle { padding: 0 2px; white-space: nowrap; letter-spacing: .08em; }
-.pager .label { white-space: nowrap; }
-.modeswitch .dl { min-height: 36px; padding: 0 8px; color: var(--accent); }
-.modeswitch .seg button { min-height: 36px; padding: 0 18px; }
+.modeswitch:has(.pill) { flex-wrap: nowrap; gap: 12px; }
+.modeswitch:has(.seg) { flex-wrap: nowrap; gap: 12px; }
+.modeswitch .seg { flex: none; margin-bottom: 8px; }
+.modeswitch .seg button { min-height: 30px; padding: 0 12px; }
+.modeswitch .pill { margin-bottom: 8px; min-height: 32px; flex: 0 1 104px; min-width: 0; width: auto; padding: 0; justify-content: center; border-radius: 26px; background: var(--bg); border: 0; box-shadow: 5px 1.5px 10px var(--shade), -5px -1.5px 10px var(--glow); }
+.modeswitch .pill:active { box-shadow: 2px 1px 5px var(--shade), -2px -1px 5px var(--glow); transform: scale(.985); }
+@media (prefers-reduced-motion: reduce) { .modeswitch .pill:active { transform: none; } }
+.modeswitch .pill.dl { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.bar .area-btn { flex: none; max-width: 132px; min-height: 36px; padding: 0 16px; border: 0; border-radius: 26px; background: var(--bg); color: var(--ink-2); font: 500 11px/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 5px 1.5px 10px var(--shade), -5px -1.5px 10px var(--glow); }
+.bar .area-btn:active { box-shadow: 2px 1px 5px var(--shade), -2px -1px 5px var(--glow); transform: scale(.985); }
+.bar .area-btn.on { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.bar .seg button { min-height: 36px; padding: 0 12px; }
+.bar .seg { flex: none; border: 0; background: var(--bg); box-shadow: 3.5px 1px 8px var(--shade), -3.5px -1px 8px var(--glow); }
+.bar .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
 .mesa-tools { margin: 0 0 4px; }
 .ctl-row.mesa-tools .led-toggle { line-height: 36px; }
 .led-toggle:disabled { opacity: .38; }
@@ -355,7 +374,7 @@ html.sheet-open, html.sheet-open body { overflow: hidden; }
 .splash-in { display: flex; flex-direction: column; align-items: center; gap: 32px; }
 .splash-bar { width: 84px; height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
 .splash-bar i { display: block; height: 100%; width: 0; background: var(--accent); animation: barGo 1.1s cubic-bezier(.4, 0, .2, 1) forwards; }
-.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; background: var(--bg); border-top: 1px solid var(--line); padding: 4px 24px calc(4px + env(safe-area-inset-bottom, 0px)); }
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: grid; grid-template-columns: 96px auto 96px; justify-content: space-between; align-items: center; gap: 8px; background: var(--bg); border-top: 1px solid var(--line); padding: 4px 24px calc(4px + env(safe-area-inset-bottom, 0px)); }
 .tab { min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 8px; font: 500 11px/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
 .tab i { width: 6px; height: 6px; border-radius: 50%; border: 1px solid currentColor; }
 .tab[aria-current="page"] { color: var(--ink); }
@@ -363,19 +382,39 @@ html.sheet-open, html.sheet-open body { overflow: hidden; }
 .tab:not(.new) { background: var(--bg); border-radius: 26px; min-height: 38px; margin: 6px 0; padding: 0 16px; box-shadow: 5px 1.5px 10px var(--shade), -5px -1.5px 10px var(--glow); }
 .tab:not(.new):active { box-shadow: 2px 1px 5px var(--shade), -2px -1px 5px var(--glow); transform: scale(.985); }
 @media (prefers-reduced-motion: reduce) { .tab:not(.new):active { transform: none; } }
-@media (max-width: 385px) { .tab:not(.new) { padding: 0 12px; } .tab.new { width: 88px; } }
-.tab:first-child { justify-self: start; } .tab:nth-child(2) { justify-self: center; }
+.tab:first-child { justify-self: start; width: 96px; padding: 0; } .tab:nth-child(2) { justify-self: center; padding: 0 18px; }
 .tab.new { justify-self: end; width: 96px; background: var(--accent); color: var(--accent-ink); font-weight: 700; margin: 6px 0; min-height: 38px; border-radius: 26px; }
+@media (max-width: 385px) { .tabbar { grid-template-columns: 88px auto 88px; } .tab:first-child { width: 88px; padding: 0; } .tab:nth-child(2) { padding: 0 14px; } .tab.new { width: 88px; } }
 /* Relevo: a face é lisa e a sombra nasce da borda para fora. A luz vem da esquerda: brilho à esquerda, sombra à direita. */
 .btn.primary, .tab.new, .btn:not(.danger):not(:disabled), .round { background-image: none; box-shadow: 7px 2px 14px var(--shade), -7px -2px 14px var(--glow); }
-.btn:not(.primary):not(.danger):not(:disabled), .round { border-color: var(--line); }
+.btn:not(.primary):not(.danger):not(:disabled), .round { border-color: transparent; }
 .round, .tab.new { box-shadow: 5px 1.5px 10px var(--shade), -5px -1.5px 10px var(--glow); }
 .btn.primary:active:not(:disabled), .tab.new:active, .btn:not(.primary):active:not(:disabled), .round:active:not(:disabled) { box-shadow: 2px 1px 5px var(--shade), -2px -1px 5px var(--glow); transform: scale(.985); }
 .btn.danger:not(:disabled) { box-shadow: 7px 2px 14px var(--shade), -7px -2px 14px var(--glow); }
+/* Só o relevo, sem linha ao redor dos botões. */
+.act, .opt { border-color: transparent; box-shadow: 4px 1.5px 9px var(--shade), -4px -1.5px 9px var(--glow); }
+.act.sel, .act.warn, .opt.on { border-color: transparent; }
+.act.sel, .opt.on { background: var(--accent); color: var(--accent-ink); }
+.act.sel .act-s, .opt.on .opt-text { color: var(--accent-ink); opacity: .8; }
+.act.warn { background: var(--accent); color: var(--accent-ink); }
+.act.warn .act-s { color: var(--accent-ink); opacity: .8; }
+.seg button[aria-pressed="true"], .bar .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.btn.danger { background: var(--accent); border-color: transparent; color: var(--accent-ink); }
+.round, .btn:not(.danger), .tool, .step, .g-btn, .mark, .seg { border-color: transparent; }
+.tool:not(.primary), .g-btn:not([aria-pressed="true"]), .step:not([aria-selected="true"]), .seg { background-color: var(--bg); }
+.btn:disabled:not(.danger) { box-shadow: 7px 2px 14px var(--shade), -7px -2px 14px var(--glow); }
+.btn.sm:disabled { box-shadow: 4px 1.5px 9px var(--shade), -4px -1.5px 9px var(--glow); }
+.tool:disabled, .g-btn:disabled { box-shadow: 3.5px 1px 8px var(--shade), -3.5px -1px 8px var(--glow); }
+.round:disabled { box-shadow: 5px 1.5px 10px var(--shade), -5px -1.5px 10px var(--glow); }
 /* Botões menores (prévias) e controles pequenos: mesmo relevo, em escala menor. */
 .btn.sm:not(:disabled) { min-height: 44px; padding: 0 16px; font-size: 15px; box-shadow: 4px 1.5px 9px var(--shade), -4px -1.5px 9px var(--glow); }
 .tool:not(:disabled), .step, .seg, .g-btn:not(:disabled), .mark { box-shadow: 3.5px 1px 8px var(--shade), -3.5px -1px 8px var(--glow); }
 .tool:active:not(:disabled), .step:active, .g-btn:active:not(:disabled), .mark:active { box-shadow: 1.5px .5px 4px var(--shade), -1.5px -.5px 4px var(--glow); transform: scale(.985); }
+/* Botões da tela de resultado: mesmo formato do rodapé, mais finos. */
+.panel .res-actions { gap: 16px 12px; }
+.res-actions .btn, .res-actions .btn.primary { min-height: 38px; padding: 6px 6px; border-radius: 26px; font: 500 10.5px/1.2 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; box-shadow: 5px 1.5px 10px var(--shade), -5px -1.5px 10px var(--glow); }
+.res-actions .btn.primary { font-weight: 700; }
+.res-actions .btn:active:not(:disabled) { box-shadow: 2px 1px 5px var(--shade), -2px -1px 5px var(--glow); transform: scale(.985); }
 @media (prefers-reduced-motion: reduce) { .btn:active, .round:active, .tab.new:active, .tool:active, .step:active, .g-btn:active, .mark:active { transform: none; } }
 body.has-bar { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
 body.has-bar .toast { bottom: calc(66px + env(safe-area-inset-bottom, 0px)); }
@@ -408,6 +447,7 @@ body.kb .tabbar { display: none; }
   'use strict';
   var KEY = 'cartas-a-mao-v1', HIDE_KEY = 'cartas-a-mao-hide-exemplo';
   var W = 1000, QH = 1250, MIN_STEP = 5;
+  var MAX_CARDS = 20; /* limite de cartas por deck; a mesa mostra todas de uma vez */
   var EXAMPLE_ID = 'boas-vindas';
 
   var splashEl = document.getElementById('splash');
@@ -502,6 +542,8 @@ body.kb .tabbar { display: none; }
     return span;
   }
 
+  document.addEventListener('contextmenu', function (e) { var t = e.target; if (!(t && t.closest && t.closest('input, textarea, [contenteditable="true"]'))) e.preventDefault(); });
+  document.addEventListener('selectstart', function (e) { var t = e.target; if (t && t.nodeType === 3) t = t.parentNode; if (!(t && t.closest && t.closest('input, textarea, [contenteditable="true"]'))) e.preventDefault(); });
   function toast(msg, action) {
     var kids = [h('span', null, msg)];
     if (action) kids.push(h('button', { class: 'toast-act', onclick: function () { clearTimeout(toast.t); toastRoot.replaceChildren(); action.fn(); } }, action.label));
@@ -584,9 +626,8 @@ body.kb .tabbar { display: none; }
     }
     return measurer;
   }
-  function fitFont(el, text) {
-    var w = el.clientWidth, hh = el.clientHeight;
-    if (!w || !hh) return 0;
+  function fitCalc(w, hh, text) {
+    if (!w || !hh) return null;
     var t = String(text || '');
     var avail = w * 0.84, availH = hh * 0.84;
     var maxFs = hh * 0.5, minFs = Math.max(6, hh * 0.09), floorFs = Math.max(5, hh * 0.05);
@@ -603,16 +644,42 @@ body.kb .tabbar { display: none; }
       while (m.scrollHeight > availH && fs > floorFs) { fs *= 0.94; m.style.fontSize = fs + 'px'; }
       blockH = m.scrollHeight;
     }
-    el.style.fontSize = fs + 'px';
-    fitFont.h = blockH;
-    return fs;
+    return { fs: fs, h: blockH };
+  }
+  function fitFont(el, text) {
+    var r = fitCalc(el.clientWidth, el.clientHeight, text);
+    if (!r) return 0;
+    el.style.fontSize = r.fs + 'px';
+    fitFont.h = r.h;
+    return r.fs;
+  }
+  /* Dentro de um deck todas as cartas usam o mesmo tamanho de letra: o maior que ainda deixa o texto mais longo caber. */
+  function fitGroup(el, group) {
+    var w = el.clientWidth, hh = el.clientHeight;
+    if (!w || !hh) return 0;
+    var key = w + 'x' + hh;
+    if (group._k !== key) {
+      var m = Infinity;
+      group.forEach(function (t) { var r = fitCalc(w, hh, t); if (r && r.fs < m) m = r.fs; });
+      group._k = key; group._fs = isFinite(m) ? m : 0;
+    }
+    if (group._fs) el.style.fontSize = group._fs + 'px';
+    return group._fs;
+  }
+  function fontGroups(cards) {
+    var g = { q: [], a: [] };
+    cards.forEach(function (c) {
+      if (c.q && c.q.kind === 'text') g.q.push(c.q.text || '');
+      if (c.a && c.a.kind === 'text') g.a.push(c.a.text || '');
+    });
+    return g;
   }
 
-  function content(side) {
+  function content(side, group) {
     if (side && side.kind === 'text') {
       var t = h('div', { class: 'txt' });
       t.textContent = side.text || '';
-      watch(t, function () { fitFont(t, side.text); });
+      watch(t, function () { if (group && group.length) fitGroup(t, group); else fitFont(t, side.text); });
       return t;
     }
     if (side && side.kind === 'image') {
@@ -630,14 +697,16 @@ body.kb .tabbar { display: none; }
     var k = 0;
     var t = function (q, a) { k++; return { id: 'ex' + k, q: { kind: 'text', text: q }, a: { kind: 'text', text: a } }; };
     return {
-      id: EXAMPLE_ID, name: 'Boas-vindas', desc: 'Um deck de 8 cartas que ensina o app. Estude para conhecer.', createdAt: 1, updatedAt: 1,
+      id: EXAMPLE_ID, name: 'Boas-vindas', desc: 'Um deck que ensina o app. Estude para conhecer.', createdAt: 1, updatedAt: 1,
       cards: [
-        t('Como estudo um deck?', 'Toque no deck, escolha Mesa ou Baralho e vire cada carta com um toque.'),
-        t('Mesa ou Baralho?', 'Mesa: as cartas ficam espalhadas e você escolhe a ordem.\nBaralho: uma carta por vez, embaralhadas.'),
-        t('Como criar um deck?', 'Toque em + Novo. Escreva, desenhe com o dedo ou use uma foto.'),
-        t('Onde acho decks prontos?', 'Em Biblioteca, na barra de baixo. Veja a prévia e baixe para a sua coleção.'),
-        t('Como apago ou oculto um deck?', 'Segure o deck por meio segundo.'),
-        t('Como estudo ao contrário?', 'Dentro do deck, toque em Sentido: Normal, Invertido ou Misto.'),
+        t('Como estudo um deck?', 'Toque no deck e escolha Mesa ou Baralho. Toque na carta para ver a resposta.'),
+        t('Mesa ou Baralho?', 'Mesa: todas as cartas à vista, alinhadas. Vire as que quiser.\nBaralho: uma carta por vez, sempre embaralhadas. Marque Erro ou Acerto.\nDá para trocar entre os dois no alto da tela.'),
+        t('O que faz o Espalhar?', 'Só na Mesa: embaralha de novo a posição das cartas na tela.'),
+        t('Como estudo ao contrário?', 'Toque em Sentido para alternar entre Normal, Invertido (resposta primeiro) e Misto.'),
+        t('Como criar um deck?', 'Toque em + Novo e dê um nome. Cada carta pode ter texto, desenho feito com o dedo (caneta, marcador, borracha e cores) ou uma foto.'),
+        t('Quantas cartas cabem num deck?', 'Até 20. Dentro de um deck, todas as cartas usam o mesmo tamanho de letra.'),
+        t('Onde acho decks prontos?', 'Em Biblioteca, na barra de baixo. Toque num deck, escolha Ver na mesa e depois Baixar para levar para a sua coleção. O botão Matéria, no alto, filtra por assunto.'),
+        t('Como apago ou oculto um deck?', 'Segure o deck por meio segundo. Os ocultos ficam em Ocultos, na tela inicial.'),
         t('Posso parar no meio?', 'Pode. Saia e veja o resultado. O que ficou sem resposta volta com mais frequência.'),
         t('Como faço backup?', 'Configurações, depois Coleção, depois Fazer backup.')
       ]
@@ -684,7 +753,10 @@ body.kb .tabbar { display: none; }
   function saveDeck(deck) {
     deck.updatedAt = Date.now();
     var i = decks.findIndex(function (d) { return d.id === deck.id; });
-    if (i >= 0) decks[i] = deck; else { decks.push(deck); homeF.area = null; }
+    if (i >= 0) decks[i] = deck; else {
+      if (decks.length === 0 && deck.id !== EXAMPLE_ID) { var ex = exampleDeck(); ex.hidden = true; decks.push(ex); store.save(ex).catch(function () {}); }
+      decks.push(deck); homeF.area = null;
+    }
     cacheDecks();
     return store.save(deck).catch(function (e) {
       toast(e && e.message === 'grande' ? 'Deck grande demais para a nuvem. Ficou salvo só neste aparelho.' : 'Não consegui salvar na nuvem. Ficou salvo neste aparelho.');
@@ -923,15 +995,24 @@ body.kb .tabbar { display: none; }
       h('button', { class: 'act', style: 'margin-top:12px', onclick: aboutSheet },
         h('span', { class: 'act-t' }, 'Sobre'),
         h('span', { class: 'act-s' }, 'Versão, ícones e créditos.')),
-      h('button', { class: 'act', style: 'margin-top:12px', onclick: function () { closeSheet(); openTestDeck(); } },
-        h('span', { class: 'act-t' }, 'Teste da mesa'),
-        h('span', { class: 'act-s' }, 'Temporário. Soma cartas uma a uma para ver até quantas cabem bem.')),
       h('div', { class: 'sheet-actions' }, h('button', { class: 'btn wide', onclick: closeSheet }, 'Fechar'))
     ));
   }
 
   /* ---------- navegação ---------- */
+  /* Deck novo que ficou como veio (sem nome escolhido, nenhuma carta) não é guardado. */
+  var fresh = null;
+  function purgeFresh(view, params) {
+    if (!fresh) return;
+    if ((view === 'edit' || view === 'deck') && params && params.deckId === fresh.id) return;
+    var f = fresh; fresh = null;
+    var d = decks.find(function (x) { return x.id === f.id; });
+    if (!f.untitled || !d || d.cards.length || d.name !== f.name) return;
+    deleteDeck(d.id);
+    if (f.addedEx && decks.length === 1 && decks[0].id === EXAMPLE_ID && decks[0].hidden) deleteDeck(EXAMPLE_ID);
+  }
   function go(view, params) {
+    purgeFresh(view, params);
     state = Object.assign({ view: view }, params || {});
     if (view !== 'study') dirSession = null;
     var zEl = document.getElementById('zoom'); if (zEl) zEl.remove();
@@ -999,7 +1080,9 @@ body.kb .tabbar { display: none; }
       var deck = { id: uid(), name: name, createdAt: Date.now(), updatedAt: Date.now(), cards: [] };
       var a = document.activeElement; if (a && a.blur) a.blur();
       closeSheet();
+      var wasEmpty = decks.length === 0;
       saveDeck(deck);
+      fresh = { id: deck.id, name: deck.name, addedEx: wasEmpty, untitled: !input.value.trim() };
       /* Espera o teclado do campo do nome fechar de vez antes de abrir a primeira carta. */
       settleViewport(function () { go('edit', { deckId: deck.id, cardId: null }); });
     }
@@ -1057,7 +1140,7 @@ body.kb .tabbar { display: none; }
     decks.forEach(function (d) { if (d.area && out.indexOf(d.area) < 0) out.push(d.area); });
     return out;
   }
-  function cmpName(a, b) { return a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' }); }
+  function cmpName(a, b) { return a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base', numeric: true }); }
   function pickSheet(label, title, options, current, onPick) {
     var list = h('div', { class: 'act-list' + (options.length > 6 ? ' long' : '') });
     options.forEach(function (o) {
@@ -1077,8 +1160,6 @@ body.kb .tabbar { display: none; }
     }));
   }
   var homeF = { area: null }, HSORT_KEY = 'cartas-a-mao-ordem';
-  var HSORTS = [{ v: 'criacao', short: 'Criação', t: 'Ordem de criação', s: 'Do mais antigo ao mais novo.' }, { v: 'az', t: 'A–Z', s: 'Por título.' }, { v: 'dom', short: 'Dominados', t: 'Mais dominados', s: 'Os que você mais acertou ficam primeiro.' }];
-  function homeSort() { var v = lsGet(HSORT_KEY); return v === 'az' || v === 'dom' ? v : 'criacao'; }
   /* Nível da carta: média dos sentidos já estudados (normal e invertido). */
   function cardLevel(c) {
     var a = c.lv, b = c.lvr;
@@ -1185,7 +1266,7 @@ body.kb .tabbar { display: none; }
     if (!obj || obj.kind !== 'backup' || !Array.isArray(obj.decks)) return -1;
     var n = 0;
     obj.decks.forEach(function (o) {
-      var d = decodeDeck(JSON.stringify(o));
+      var d = decodeDeck(JSON.stringify(o), true);
       if (!d) return;
       d.name = uniqueName(d.name);
       if (o.hidden) d.hidden = true;
@@ -1243,22 +1324,17 @@ body.kb .tabbar { display: none; }
       h('h2', { class: 'sheet-title', style: 'margin-top:8px' }, it.name),
       h('p', { class: 'lib-sub' }, it.desc),
       pairs,
-      h('div', { class: 'label', style: 'margin-top:16px' }, 'Estudar agora'),
-      h('div', { class: 'sheet-actions', style: 'margin-top:8px' },
-        h('button', { class: 'btn wide primary sm', onclick: function () { closeSheet(); go('study', { deckId: PREV + it.id, mode: 'mesa' }); } }, 'Mesa'),
-        h('button', { class: 'btn wide primary sm', onclick: function () { closeSheet(); go('study', { deckId: PREV + it.id, mode: 'baralho' }); } }, 'Baralho')
-      ),
-      h('div', { class: 'sheet-actions', style: 'margin-top:12px' },
+      h('div', { class: 'sheet-actions', style: 'margin-top:16px' },
+        h('button', { class: 'btn wide primary sm', onclick: function () { closeSheet(); go('study', { deckId: PREV + it.id, mode: 'mesa' }); } }, 'Ver na mesa'),
         h('button', { class: 'btn wide sm', onclick: function () {
           saveDeck(libCopy(it)); closeSheet(); toast('Deck nos seus decks.'); render();
-        } }, owned ? 'Baixar outra cópia' : 'Baixar para os meus decks')
+        } }, owned ? 'Baixar outra cópia' : 'Baixar')
       )
     ));
   }
   function plain(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
-  var libState = { area: null, sort: 'area' };
+  var libState = { area: null };
   var libLoaded = true, libFailed = false; /* no app instalado a biblioteca vem de biblioteca.json */
-  var LSORTS = [{ v: 'area', t: 'Por matéria', s: 'Agrupado, na ordem das matérias.' }, { v: 'az', t: 'A–Z', s: 'Todos juntos, por título.' }];
   function libTile(it) {
     var n = it.cards.length;
     var dots = h('div', { class: 'dots', 'aria-hidden': 'true' });
@@ -1283,23 +1359,21 @@ body.kb .tabbar { display: none; }
     if (state.area) libState.area = state.area;
     var areas = [];
     LIBRARY.forEach(function (it) { if (areas.indexOf(it.area) < 0) areas.push(it.area); });
+    areas.sort(function (a, b) { return a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }); });
     if (areas.indexOf(libState.area) < 0) libState.area = null;
     var search = h('input', { class: 'name-input lib-search', type: 'search', placeholder: 'Buscar deck ou assunto', 'aria-label': 'Buscar na biblioteca', autocomplete: 'off', autocapitalize: 'none', enterkeyhint: 'search' });
-    var ctlBox = h('div');
     var gridBox = h('div');
+    var areaBtn = h('button', { class: 'area-btn', onclick: function () {
+      var opts = [{ v: null, t: 'Todas', s: LIBRARY.length + ' decks' }].concat(areas.map(function (a) {
+        var c = LIBRARY.filter(function (i) { return i.area === a; }).length;
+        return { v: a, t: a, s: c + (c === 1 ? ' deck' : ' decks') };
+      }));
+      pickSheet('Biblioteca', 'Matéria', opts, libState.area, function (v) { libState.area = v; drawCtl(); drawGrid(); });
+    } });
     function drawCtl() {
-      ctlBox.replaceChildren(ctlRow([
-        { label: 'Matéria', value: libState.area || 'Todas', onclick: function () {
-          var opts = [{ v: null, t: 'Todas', s: LIBRARY.length + ' decks' }].concat(areas.map(function (a) {
-            var c = LIBRARY.filter(function (i) { return i.area === a; }).length;
-            return { v: a, t: a, s: c + (c === 1 ? ' deck' : ' decks') };
-          }));
-          pickSheet('Biblioteca', 'Matéria', opts, libState.area, function (v) { libState.area = v; drawCtl(); drawGrid(); });
-        } },
-        { label: 'Ordem', value: sortLabel(LSORTS, libState.sort), onclick: function () {
-          pickSheet('Biblioteca', 'Ordem', LSORTS, libState.sort, function (v) { libState.sort = v; drawCtl(); drawGrid(); });
-        } }
-      ]));
+      areaBtn.textContent = libState.area || 'Matéria';
+      areaBtn.classList.toggle('on', !!libState.area);
+      areaBtn.setAttribute('aria-label', 'Matéria: ' + (libState.area || 'todas'));
     }
     function drawGrid() {
       var q = plain(search.value).trim(), words = q ? q.split(/\s+/) : [];
@@ -1309,10 +1383,10 @@ body.kb .tabbar { display: none; }
         var hay = plain(it.name + ' ' + it.area + ' ' + it.desc);
         return words.every(function (w) { return hay.indexOf(w) >= 0; });
       });
-      if (libState.sort === 'az') list = list.slice().sort(cmpName);
+      list = list.slice().sort(cmpName); /* sempre de A a Z */
       gridBox.replaceChildren();
       if (!list.length) { gridBox.append(h('p', { class: 'empty-list' }, 'Nenhum deck encontrado.')); return; }
-      var grouped = libState.sort === 'area' && !libState.area;
+      var grouped = false;
       var grid = h('div', { class: 'grid' }), last = null;
       list.forEach(function (it) {
         if (grouped && it.area !== last) {
@@ -1324,14 +1398,20 @@ body.kb .tabbar { display: none; }
       });
       gridBox.append(grid);
     }
-    search.addEventListener('input', drawGrid);
+    var clearX = h('button', { class: 'search-x', type: 'button', 'aria-label': 'Limpar busca', hidden: true, onclick: function () {
+      search.value = ''; clearX.hidden = true; drawGrid(); search.focus();
+    } });
+    clearX.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    var sbox = h('div', { class: 'search-box' }, search, clearX);
+    search.addEventListener('input', function () { clearX.hidden = !search.value; drawGrid(); });
     drawCtl(); drawGrid();
     app.append(
       h('div', { class: 'bar' },
         backBtn('Voltar aos decks', function () { go('home'); }),
-        h('div', { class: 'grow' }, h('div', { class: 'label' }, LIBRARY.length + ' decks prontos'), h('div', { class: 'bar-title' }, 'Biblioteca'))
+        h('div', { class: 'grow' }, h('div', { class: 'label' }, LIBRARY.length + ' decks prontos'), h('div', { class: 'bar-title' }, 'Biblioteca')),
+        areaBtn
       ),
-      search, ctlBox, gridBox
+      sbox, gridBox
     );
   }
 
@@ -1353,13 +1433,12 @@ body.kb .tabbar { display: none; }
     var nh = hiddenDecks().length;
     var areasHere = [];
     all.forEach(function (d) { var a = deckArea(d); if (areasHere.indexOf(a) < 0) areasHere.push(a); });
+    areasHere.sort(function (a, b) { return a === NO_AREA ? 1 : (b === NO_AREA ? -1 : a.localeCompare(b, 'pt-BR', { sensitivity: 'base' })); });
     if (areasHere.indexOf(homeF.area) < 0) homeF.area = null;
     var list = all.filter(function (d) { return !homeF.area || deckArea(d) === homeF.area; });
-    var hs = homeSort();
-    if (hs === 'az') list = list.slice().sort(cmpName);
-    else if (hs === 'dom') list = list.slice().sort(function (a, b) { return deckMastery(b) - deckMastery(a); });
+    list = list.slice().sort(cmpName); /* sempre de A a Z */
     var ctl = '';
-    if (all.length >= 2) {
+    if (all.length >= 2 && areasHere.length > 1) {
       var items = [];
       if (areasHere.length > 1) items.push({ label: 'Matéria', value: homeF.area || 'Todas', onclick: function () {
         var opts = [{ v: null, t: 'Todas', s: all.length + ' decks' }].concat(areasHere.map(function (a) {
@@ -1368,16 +1447,12 @@ body.kb .tabbar { display: none; }
         }));
         pickSheet('Seus decks', 'Matéria', opts, homeF.area, function (v) { homeF.area = v; render(); });
       } });
-      items.push({ label: 'Ordem', value: sortLabel(HSORTS, hs), onclick: function () {
-        pickSheet('Seus decks', 'Ordem', HSORTS, hs, function (v) { lsSet(HSORT_KEY, v); render(); });
-      } });
       ctl = ctlRow(items);
     }
     app.append(
       h('header', { class: 'masthead' },
         h('div', null, h('div', { class: 'label' }, 'Estudo por cartas'), h('h1', { class: 'brand' }, 'Cartas à Mão')),
-        h('button', { class: 'round', 'aria-label': 'Configurações', onclick: settingsSheet }, icon('sliders')),
-        h('div', { class: 'status', id: 'status' })
+        h('button', { class: 'round', 'aria-label': 'Configurações', onclick: settingsSheet }, icon('sliders'))
       ),
       ctl,
       h('main', { class: 'grid' },
@@ -1402,9 +1477,9 @@ body.kb .tabbar { display: none; }
   }
 
   /* ---------- estudo ---------- */
-  function faceEl(side, label, cls) {
+  function faceEl(side, label, cls, group) {
     var f = h('div', { class: 'face ' + cls }, h('span', { class: 'face-label' }, label));
-    f.append(content(side));
+    f.append(content(side, group));
     return f;
   }
 
@@ -1422,17 +1497,17 @@ body.kb .tabbar { display: none; }
       h('div', { class: 'label' }, deck.name),
       h('h2', { class: 'sheet-title', style: 'margin-top:8px' }, 'Como estudar?'),
       h('div', { class: 'opts' },
-        opt('mesa', 'Mesa', 'Cartas espalhadas. Toque numa para virar e ver a resposta.'),
+        opt('mesa', 'Mesa', 'Cartas espalhadas. Toque para ver a resposta.'),
         opt('baralho', 'Baralho', 'Embaralhadas, uma de cada vez.')),
       h('div', { class: 'sheet-actions' }, h('button', { class: 'btn wide', onclick: closeSheet }, 'Cancelar'))
     ));
   }
 
   /* Uma carta grande que vira ao toque. */
-  function cardBlock(c, onFlip) {
+  function cardBlock(c, onFlip, fg) {
     var flipped = false;
-    var front = faceEl(c.q, 'Pergunta', 'front');
-    var back = faceEl(c.a, 'Resposta', 'back');
+    var front = faceEl(c.q, 'Pergunta', 'front', fg && fg.q);
+    var back = faceEl(c.a, 'Resposta', 'back', fg && fg.a);
     var flip = h('div', { class: 'flip' }, front, back);
     var flipBtn = h('button', { class: 'btn primary' }, 'Ver resposta');
     function sync() {
@@ -1452,7 +1527,7 @@ body.kb .tabbar { display: none; }
   function viewStudy() {
     var deck = getDeck(state.deckId);
     if (!deck) { go('home'); return; }
-    var mode = state.mode === 'mesa' ? 'mesa' : 'baralho';
+    var mode = (state.mode === 'mesa' || isPreview(deck.id)) ? 'mesa' : 'baralho'; /* prévia da biblioteca só na mesa; o baralho vem depois de baixar */
     var review = Array.isArray(state.only);
     var dir = (dirSession && dirSession.deckId === deck.id) ? dirSession.dir : 'normal';
     /* O sentido troca o que aparece na frente. Cada direção guarda o seu próprio nível (lv e lvr). */
@@ -1462,6 +1537,7 @@ body.kb .tabbar { display: none; }
     });
     function setLv(c, v) { c.lv = v; c._src[c._rev ? 'lvr' : 'lv'] = v; }
     var n = cards.length;
+    var fg = fontGroups(mode === 'mesa' ? cards.slice(0, MAX_CARDS) : cards);
     var natural = cards.map(function (_, i) { return i; });
     var results = {};
     /* Memória do baralho: cartas erradas vêm primeiro, as já sabidas ficam para o fim. */
@@ -1482,12 +1558,19 @@ body.kb .tabbar { display: none; }
     }
     if (mode === 'baralho') viewCleanup = flushLevels;
     /* Mesa: no máximo 15 cartas por vez; decks maiores viram "mesas" em sequência (1 a 15, 16 a 30, ...). */
-    var MESA_MAX = 15, mesaPage = 0, mesaPages = Math.max(1, Math.ceil(n / MESA_MAX));
-    function pageSeq() { return shuffleArr(natural.slice(mesaPage * MESA_MAX, (mesaPage + 1) * MESA_MAX)); }
+    /* Mesa: até 20 cartas, todas na mesma tela (decks antigos maiores mostram as 20 primeiras). */
+    function pageSeq() { return shuffleArr(natural.slice(0, MAX_CARDS)); }
     var seq = pageSeq();
     var shuffled = true;
     var order = mode === 'baralho' ? smartOrder() : seq;
     var pos = 0;
+    /* Trocar o sentido no baralho mantém a sequência e a carta atual; só muda o lado que aparece na frente. */
+    if (mode === 'baralho' && dirSession && dirSession.deckId === deck.id && dirSession.keep) {
+      var kp = dirSession.keep; dirSession.keep = null;
+      var idxOf = {}; cards.forEach(function (c, i) { idxOf[c.id] = i; });
+      var ord = kp.order.map(function (id) { return idxOf[id]; }).filter(function (i) { return i != null; });
+      if (ord.length === n) { order = ord; pos = Math.min(kp.pos, n); shuffled = kp.shuffled; results = kp.results; }
+    }
     var ended = false, prevLv = {};
     /* Ao encerrar no meio, as cartas sem resposta voltam ao começo do baralho (como as erradas). */
     function markUnanswered() {
@@ -1516,23 +1599,12 @@ body.kb .tabbar { display: none; }
       return true;
     }
 
-    if (mode === 'baralho') app.style.setProperty('--reserve', '392px');
+    if (mode === 'baralho') app.style.setProperty('--reserve', '250px');
 
     var counter = h('div', { class: 'label' });
-    var led = h('span', { class: 'led' });
-    var sideBtn;
-    if (mode === 'baralho') {
-      sideBtn = h('button', { class: 'led-toggle', 'aria-pressed': 'true', onclick: function () {
-        shuffled = !shuffled;
-        resume();
-        order = shuffled ? smartOrder() : natural;
-        pos = 0; results = {}; paint();
-      } }, led, 'Aleatório');
-    } else {
-      sideBtn = h('button', { class: 'led-toggle', onclick: function () {
-        seq = pageSeq(); paint();
-      } }, 'Espalhar de novo');
-    }
+    var sideBtn = mode === 'mesa' ? h('button', { class: 'led-toggle pill', onclick: function () {
+      seq = pageSeq(); paint();
+    } }, 'Espalhar') : null;
     var body = h('div', { class: 'study-body' });
     var relayout = null;
     if (mode === 'mesa') {
@@ -1541,18 +1613,20 @@ body.kb .tabbar { display: none; }
       viewCleanup = function () { window.removeEventListener('resize', onRes); };
     }
     var allTxt = h('span', null, 'Virar todas');
-    var allBtn = mode === 'mesa' ? h('button', { class: 'led-toggle' }, h('span', { class: 'sizer' }, allTxt, h('span', { class: 'ghost', 'aria-hidden': 'true' }, 'Desvirar todas'))) : null;
+    var allBtn = null;
     var libItem = deck._lib || null;
     var backB = libItem
       ? backBtn('Voltar à biblioteca', function () { if (stopEarly()) return; flushLevels(); go('library', { area: libItem.area }); })
       : backBtn('Voltar aos decks', function () { if (stopEarly()) return; go('home'); });
     var dlBtn = null;
     function downloadBtn(cls) {
-      var b = h('button', { class: cls }, libOwned(libItem) ? 'Baixar outra cópia' : 'Baixar');
+      var short = cls.indexOf('pill') >= 0;
+      var b = h('button', { class: cls }, (!short && libOwned(libItem)) ? 'Baixar outra cópia' : 'Baixar');
       b.addEventListener('click', function () {
+        var again = libOwned(libItem);
         saveDeck(libCopy(libItem));
-        toast('Deck nos seus decks.');
-        b.textContent = 'Baixar outra cópia';
+        toast(again ? 'Mais uma cópia nos seus decks.' : 'Deck nos seus decks.');
+        if (!short) b.textContent = 'Baixar outra cópia';
       });
       return b;
     }
@@ -1567,18 +1641,20 @@ body.kb .tabbar { display: none; }
       } }, label);
     }
     var DIRS = { normal: 'Normal', rev: 'Invertido', mix: 'Misto' };
-    var dirBtn = h('button', { class: 'led-toggle', style: 'min-height:36px;padding:0 6px', 'aria-label': 'Sentido do estudo: ' + DIRS[dir] + '. Toque para mudar.', onclick: function () {
+    var dirBtn = h('button', { class: 'led-toggle pill', 'aria-label': 'Mudar o sentido do estudo (agora: ' + DIRS[dir] + ')', onclick: function () {
       flushLevels();
       var next = dir === 'normal' ? 'rev' : (dir === 'rev' ? 'mix' : 'normal');
       dirSession = { deckId: deck.id, dir: next };
+      if (mode === 'baralho' && !ended) dirSession.keep = { order: order.map(function (i) { return cards[i].id; }), pos: pos, results: results, shuffled: shuffled };
       go('study', { deckId: deck.id, mode: mode, only: review ? state.only : undefined });
-    } }, h('span', { class: 'sizer' }, h('span', null, 'Sentido: ', h('b', { style: 'font-weight:500;color:var(--ink);border-bottom:1px dotted var(--ink-2)' }, DIRS[dir])), h('span', { class: 'ghost', 'aria-hidden': 'true' }, 'Sentido: Invertido')));
-    var modeRow = h('div', { class: 'modeswitch' }, h('div', { class: 'seg', role: 'group', 'aria-label': 'Modo de estudo' }, modeBtn('mesa', 'Mesa'), modeBtn('baralho', 'Baralho')), dirBtn);
-    if (libItem) modeRow.append(downloadBtn('led-toggle dl'));
+    } }, 'Sentido');
+    var segEl = isPreview(deck.id) ? '' : h('div', { class: 'seg', role: 'group', 'aria-label': 'Modo de estudo' }, modeBtn('mesa', 'Mesa'), modeBtn('baralho', 'Baralho'));
+    var modeRow = h('div', { class: 'modeswitch' }, segEl, sideBtn || (segEl ? h('span', { class: 'pill', 'aria-hidden': 'true', style: 'visibility:hidden' }) : ''), dirBtn);
+    if (libItem) modeRow.append(downloadBtn('led-toggle pill dl'));
     var testRow = '';
     if (deck.id === TEST_ID) {
       var setN = function (k) {
-        var cur = testDeck.cards.length, nn = Math.max(1, Math.min(60, cur + k));
+        var cur = testDeck.cards.length, nn = Math.max(1, Math.min(MAX_CARDS, cur + k));
         testDeck.cards = testCards(nn);
         render();
       };
@@ -1590,11 +1666,8 @@ body.kb .tabbar { display: none; }
     }
 
     app.append(
-      mode === 'mesa'
-        ? h('div', { class: 'bar' }, backB, titleB)
-        : h('div', { class: 'bar' }, backB, titleB, sideBtn),
+      h('div', { class: 'bar' }, backB, titleB),
       modeRow,
-      mode === 'mesa' ? h('div', { class: 'ctl-row mesa-tools' }, allBtn, sideBtn) : '',
       testRow,
       body
     );
@@ -1645,11 +1718,11 @@ body.kb .tabbar { display: none; }
       if (ended || pos >= order.length) { body.append(resultsEl()); return; }
       var c = cards[order[pos]];
       var revealed = false;
-      var yes = h('button', { class: 'btn wide primary', disabled: true, onclick: function () { results[c.id] = 'ok'; rate(c, true); buzz(10); pos++; paint(); } }, 'Acertei');
-      var no = h('button', { class: 'btn wide', disabled: true, onclick: function () { results[c.id] = 'no'; rate(c, false); buzz([14, 40, 14]); pos++; paint(); } }, 'Errei');
+      var yes = h('button', { class: 'mark-pill yes', disabled: true, onclick: function () { results[c.id] = 'ok'; rate(c, true); buzz(10); pos++; paint(); } }, 'Acerto');
+      var no = h('button', { class: 'mark-pill', disabled: true, onclick: function () { results[c.id] = 'no'; rate(c, false); buzz([14, 40, 14]); pos++; paint(); } }, 'Erro');
       var cb = cardBlock(c, function (f) {
         if (f && !revealed) { revealed = true; yes.disabled = false; no.disabled = false; }
-      });
+      }, fg);
       body.append(
         cb.stage,
         h('div', { class: 'marks-row' }, no, yes)
@@ -1666,7 +1739,7 @@ body.kb .tabbar { display: none; }
     function openZoom(c, ctl, cell) {
       closeZoom(true);
       var side = ctl.on ? c.a : c.q;
-      var card = h('div', { class: 'zoomcard' }, h('div', { class: 'face-label' }, ctl.on ? 'Resposta' : 'Pergunta'), content(side));
+      var card = h('div', { class: 'zoomcard' }, h('div', { class: 'face-label' }, ctl.on ? 'Resposta' : 'Pergunta'), content(side, ctl.on ? fg.a : fg.q));
       var t0 = Date.now();
       var z = h('div', { class: 'zoom', id: 'zoom', role: 'dialog', 'aria-label': 'Carta ampliada. Toque para fechar.', tabindex: '-1',
         onclick: function () { if (Date.now() - t0 > 250) closeZoom(); } }, card);
@@ -1679,21 +1752,18 @@ body.kb .tabbar { display: none; }
       if (e.key === 'Escape') closeZoom();
     });
 
-    /* Cartas soltas na mesa: pouca inclinação e deslocamento, e o tamanho da carta é calculado para que nem no pior caso uma toque na outra. */
-    var JIT = { rot: 3.5, dx: 0.03, dy: 0.03 };
+    /* Cartas alinhadas na mesa, sem inclinação. */
+    var JIT = { rot: 0, dx: 0, dy: 0 };
     function paintTable() {
       var grid = h('div', { class: 'table' });
       var cells = [], cells_el = [];
-      allTxt.textContent = 'Virar todas';
-      function syncAll() {
-        allTxt.textContent = cells.every(function (x) { return x.on; }) ? 'Desvirar todas' : 'Virar todas';
-      }
-      counter.textContent = n + (n === 1 ? ' carta' : ' cartas');
+      function syncAll() {}
+      counter.textContent = n > MAX_CARDS ? MAX_CARDS + ' de ' + n + ' cartas' : n + (n === 1 ? ' carta' : ' cartas');
       seq.forEach(function (ci) {
         var c = cards[ci];
-        var front = h('div', { class: 'face front' }); front.append(content(c.q));
+        var front = h('div', { class: 'face front' }); front.append(content(c.q, fg.q));
         var back = h('div', { class: 'face back' });
-        var ans = h('div', { class: 'ans' }); ans.append(content(c.a));
+        var ans = h('div', { class: 'ans' }); ans.append(content(c.a, fg.a));
         back.append(ans);
         var flip = h('div', { class: 'flip' }, front, back);
         var cell = h('button', { class: 'mini', 'aria-label': 'Carta da mesa. Toque para ver a resposta.' }, flip);
@@ -1723,19 +1793,6 @@ body.kb .tabbar { display: none; }
         cells.push(ctl);
         grid.append(cell);
       });
-      allBtn.onclick = function () {
-        var target = !cells.every(function (x) { return x.on; });
-        cells.forEach(function (x) { x.set(target); });
-        syncAll();
-      };
-      if (mesaPages > 1) {
-        var from = mesaPage * MESA_MAX + 1, to = Math.min(n, (mesaPage + 1) * MESA_MAX);
-        var goPage = function (d) { mesaPage = Math.max(0, Math.min(mesaPages - 1, mesaPage + d)); seq = pageSeq(); paint(); window.scrollTo(0, 0); };
-        body.append(h('div', { class: 'modeswitch pager' },
-          h('button', { class: 'led-toggle', disabled: mesaPage === 0, 'aria-label': 'Mesa anterior', onclick: function () { goPage(-1); } }, '‹ Anterior'),
-          h('span', { class: 'label pos', 'aria-live': 'polite' }, 'Mesa ' + (mesaPage + 1) + ' de ' + mesaPages + ' · ' + from + '–' + to),
-          h('button', { class: 'led-toggle', disabled: mesaPage === mesaPages - 1, 'aria-label': 'Próxima mesa', onclick: function () { goPage(1); } }, 'Próxima ›')));
-      }
       body.append(grid);
       /* Todas as cartas cabem na tela, sempre do mesmo tamanho. */
       function layoutGrid() {
@@ -1775,8 +1832,6 @@ body.kb .tabbar { display: none; }
     function paint() {
       closeZoom(true); clearWatch(); body.replaceChildren();
       if (mode === 'baralho') {
-        sideBtn.setAttribute('aria-pressed', String(shuffled));
-        led.classList.toggle('on', shuffled);
         var prefix = review ? 'Revisão · ' : '';
         counter.textContent = n ? ((pos >= n || ended) ? prefix + 'Resultado' : prefix + (pos + 1) + ' / ' + n) : 'Sem cartas';
       }
@@ -1833,7 +1888,7 @@ body.kb .tabbar { display: none; }
     }
     return null;
   }
-  function decodeDeck(code) {
+  function decodeDeck(code, keepAll) {
     try {
       var t = String(code || '').trim(), obj;
       if (t.charAt(0) === '{') obj = JSON.parse(t);
@@ -1849,9 +1904,12 @@ body.kb .tabbar { display: none; }
         if (!q || !a) return null;
         cards.push({ id: uid(), q: q, a: a });
       }
+      var cut = !keepAll && cards.length > MAX_CARDS;
+      if (cut) cards = cards.slice(0, MAX_CARDS);
       var dk = { id: uid(), name: obj.name.slice(0, 40) || 'Deck importado', author: typeof obj.author === 'string' ? obj.author.slice(0, 40) : '', createdAt: Date.now(), updatedAt: Date.now(), cards: cards };
       if (typeof obj.desc === 'string' && obj.desc.trim()) dk.desc = obj.desc.trim().slice(0, 80);
       if (typeof obj.area === 'string' && obj.area.trim()) dk.area = obj.area.trim().slice(0, 30);
+      if (cut) dk._cut = true;
       return dk;
     } catch (e) { return null; }
   }
@@ -1931,10 +1989,11 @@ body.kb .tabbar { display: none; }
       var deck = decodeDeck(raw);
       if (!deck) { msg.textContent = 'Não consegui ler esse deck. Confira se é um arquivo ou código do Cartas à Mão.'; return; }
       deck.name = uniqueName(deck.name);
+      var wasCut = !!deck._cut; delete deck._cut;
       closeSheet();
       saveDeck(deck);
       state = { view: 'home' }; render();
-      toast('Deck importado');
+      toast(wasCut ? 'Deck importado, só as ' + MAX_CARDS + ' primeiras cartas' : 'Deck importado');
     }
     function run() {
       var raw = area.value.trim();
@@ -2001,19 +2060,20 @@ body.kb .tabbar { display: none; }
       var a = deck.cards[i]; deck.cards[i] = deck.cards[k]; deck.cards[k] = a;
       saveDeck(deck); render();
     }
-    var others = decks.filter(function (d) { return d.id !== deck.id; });
+    var others = decks.filter(function (d) { return d.id !== deck.id && d.cards.length < MAX_CARDS; });
     openSheet(h('div', null,
       h('div', { class: 'label' }, 'Carta ' + (i + 1) + ' de ' + deck.cards.length),
       h('div', { class: 'act-list' },
         act('Editar', null, function () { go('edit', { deckId: deck.id, cardId: c.id }); }),
         act('Duplicar', 'Cria uma cópia logo abaixo.', function () {
+          if (deck.cards.length >= MAX_CARDS) { closeSheet(); toast('Este deck já tem ' + MAX_CARDS + ' cartas.'); return; }
           var cp = clone(c); cp.id = uid(); delete cp.lv;
           deck.cards.splice(i + 1, 0, cp); saveDeck(deck); render(); toast('Carta duplicada.');
         }),
         i > 0 ? act('Subir', null, function () { swap(i - 1); }) : '',
         i < last ? act('Descer', null, function () { swap(i + 1); }) : '',
-        act('Mover para outro deck', others.length ? 'Escolha o deck de destino.' : 'Crie outro deck primeiro.', function () {
-          if (!others.length) { toast('Crie outro deck primeiro.'); return; }
+        act('Mover para outro deck', others.length ? 'Escolha o deck de destino.' : 'Nenhum outro deck com espaço.', function () {
+          if (!others.length) { toast('Nenhum outro deck com espaço.'); return; }
           pickSheet('Mover carta', 'Para qual deck?', others.map(function (d) { return { v: d.id, t: d.name, s: d.cards.length + (d.cards.length === 1 ? ' carta' : ' cartas') }; }), null, function (id) {
             var to = decks.find(function (d) { return d.id === id; });
             if (!to) return;
@@ -2073,7 +2133,9 @@ body.kb .tabbar { display: none; }
       field,
       h('div', { class: 'actions' },
         h('button', { class: 'btn wide', onclick: function () { chooseMode(deck.id); } }, 'Estudar'),
-        h('button', { class: 'btn wide primary', onclick: function () { go('edit', { deckId: deck.id, cardId: null }); } }, icon('plus', 18), 'Nova carta')
+        deck.cards.length >= MAX_CARDS
+          ? h('button', { class: 'btn wide', disabled: true }, MAX_CARDS + ' de ' + MAX_CARDS + ' cartas')
+          : h('button', { class: 'btn wide primary', onclick: function () { go('edit', { deckId: deck.id, cardId: null }); } }, icon('plus', 18), 'Nova carta')
       ),
       list,
       h('div', { class: 'danger-zone' },
@@ -2132,6 +2194,7 @@ body.kb .tabbar { display: none; }
     var deck = getDeck(state.deckId);
     if (!deck) { go('home'); return; }
     var existing = state.cardId ? deck.cards.find(function (c) { return c.id === state.cardId; }) : null;
+    if (!existing && deck.cards.length >= MAX_CARDS) { go('deck', { deckId: deck.id }); toast('Este deck já tem ' + MAX_CARDS + ' cartas.'); return; }
     var draft = { q: toDraft(existing && existing.q), a: toDraft(existing && existing.a) };
     if (!existing) { draft.q.kind = lastKind; draft.a.kind = lastKind; }
     var step = 'q';
@@ -2140,7 +2203,7 @@ body.kb .tabbar { display: none; }
 
     app.style.setProperty('--reserve', 'calc(240px + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))');
     var cardNo = existing ? deck.cards.findIndex(function (c) { return c.id === existing.id; }) + 1 : deck.cards.length + 1;
-    var cardTotal = existing ? deck.cards.length : deck.cards.length + 1;
+    var cardTotal = existing ? deck.cards.length : MAX_CARDS;
     var titleTxt = h('span', { class: 'bar-title-txt' }, deck.name);
     app.append(
       h('div', { class: 'bar' },
@@ -2546,7 +2609,7 @@ body.kb .tabbar { display: none; }
         nextBtn = h('button', { class: 'tool primary', 'aria-label': 'Avançar para a resposta', onclick: function () { step = 'a'; draw(true); window.scrollTo(0, 0); } }, 'Avançar');
         go1 = nextBtn;
       } else {
-        saveBtn = h('button', { class: 'tool primary', 'aria-label': existing ? 'Salvar alterações' : 'Salvar e abrir a próxima carta', onclick: save }, existing ? 'Salvar' : 'Próxima');
+        saveBtn = h('button', { class: 'tool primary', 'aria-label': existing ? 'Salvar alterações' : (deck.cards.length + 1 >= MAX_CARDS ? 'Salvar a última carta' : 'Salvar e abrir a próxima carta'), onclick: save }, existing || deck.cards.length + 1 >= MAX_CARDS ? 'Salvar' : 'Próxima');
         go1 = saveBtn;
       }
       var tools = h('div', { class: 'tools' }, seg, h('div', { class: 'tool-btns' }, s.kind === 'draw' ? undoBtn : null, clearBtn, go1));
@@ -2581,6 +2644,7 @@ body.kb .tabbar { display: none; }
       var d = commit();
       if (!d) return;
       if (existing) go('deck', { deckId: d.id });
+      else if (d.cards.length >= MAX_CARDS) { go('deck', { deckId: d.id }); toast('Deck completo: ' + MAX_CARDS + ' cartas.'); }
       else go('edit', { deckId: d.id, cardId: null });
     }
 
