@@ -230,7 +230,7 @@ input, textarea, [contenteditable="true"] { -webkit-touch-callout: default; -web
 .hid-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
 .hid-name { font: 700 16px/1.2 var(--f-display); min-width: 0; overflow-wrap: anywhere; }
 .sec-gap { margin-top: 24px; }
-.tile.lib { background: var(--panel); border: 1.5px solid var(--ink); }
+.tile.lib { background: var(--panel); border: 1px solid var(--line); }
 .tile.lib .tile-name { padding-right: 0; }
 .lib-area { margin: 24px 0 8px; }
 .search-box { position: relative; margin: 8px 0 16px; }
@@ -988,7 +988,7 @@ body.kb .tabbar { display: none; }
       h('div', { class: 'label sec-gap' }, 'Texto'),
       miniSeg('Tamanho do texto', [['normal', 'Normal'], ['grande', 'Maior']], textBig() ? 'grande' : 'normal', function (v) { lsSet(TEXT_KEY, v); render(); }),
       h('p', { class: 'hint' }, 'O texto maior vale para a coleção, a biblioteca e a lista de cartas.'),
-      h('div', { class: 'label sec-gap' }, 'Seus decks'),
+      h('div', { class: 'label sec-gap' }, 'Decks'),
       h('button', { class: 'act', style: 'margin-top:8px', onclick: collectionSheet },
         h('span', { class: 'act-t' }, 'Coleção'),
         h('span', { class: 'act-s' }, 'Backup, restaurar, ocultos e limpar tudo.')),
@@ -1325,8 +1325,8 @@ body.kb .tabbar { display: none; }
       h('p', { class: 'lib-sub' }, it.desc),
       pairs,
       h('div', { class: 'sheet-actions', style: 'margin-top:16px' },
-        h('button', { class: 'btn wide primary sm', onclick: function () { closeSheet(); go('study', { deckId: PREV + it.id, mode: 'mesa' }); } }, 'Ver na mesa'),
-        h('button', { class: 'btn wide sm', onclick: function () {
+        h('button', { class: 'btn wide sm', onclick: function () { closeSheet(); go('study', { deckId: PREV + it.id, mode: 'mesa' }); } }, 'Ver na mesa'),
+        h('button', { class: 'btn wide primary sm', onclick: function () {
           saveDeck(libCopy(it)); closeSheet(); toast('Deck nos seus decks.'); render();
         } }, owned ? 'Baixar outra cópia' : 'Baixar')
       )
