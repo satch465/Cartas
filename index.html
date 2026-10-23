@@ -35,12 +35,12 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #161715; --panel: #22231F; --card: #2B2C28; --ink: #ECECE6; --ink-2: #A3A59D;
-    --line: #3C3E38; --accent: #FF6B2C; --accent-ink: #161715; --shade: rgba(0,0,0,.60); --glow: rgba(255,255,255,.07); color-scheme: dark;
+    --line: #55574F; --accent: #FF6B2C; --accent-ink: #161715; --shade: rgba(0,0,0,.60); --glow: rgba(255,255,255,.16); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #161715; --panel: #22231F; --card: #2B2C28; --ink: #ECECE6; --ink-2: #A3A59D;
-  --line: #3C3E38; --accent: #FF6B2C; --accent-ink: #161715; --shade: rgba(0,0,0,.60); --glow: rgba(255,255,255,.07); color-scheme: dark;
+  --line: #55574F; --accent: #FF6B2C; --accent-ink: #161715; --shade: rgba(0,0,0,.60); --glow: rgba(255,255,255,.16); color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body {
@@ -320,6 +320,12 @@ input, textarea, [contenteditable="true"] { -webkit-touch-callout: default; -web
 .modeswitch .pill:active { box-shadow: 2px 1px 5px var(--shade), -2px -1px 5px var(--glow); transform: scale(.985); }
 @media (prefers-reduced-motion: reduce) { .modeswitch .pill:active { transform: none; } }
 .modeswitch .pill.dl { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.modeswitch .seg2 { display: contents; }
+.modeswitch:has(.seg2) { gap: 8px; }
+.modeswitch:has(.seg2) .pill { flex: 1 1 0; max-width: 104px; font-size: 10.5px; letter-spacing: .08em; gap: 6px; padding: 0 4px; }
+.modeswitch .pill i { flex: none; width: 6px; height: 6px; border-radius: 50%; border: 1px solid currentColor; box-sizing: border-box; }
+.modeswitch .pill[aria-pressed="true"] { color: var(--ink); }
+.modeswitch .pill[aria-pressed="true"] i { background: var(--accent); border-color: var(--accent); }
 .bar .area-btn { flex: none; max-width: 132px; min-height: 36px; padding: 0 16px; border: 0; border-radius: 26px; background: var(--bg); color: var(--ink-2); font: 500 11px/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 5px 1.5px 10px var(--shade), -5px -1.5px 10px var(--glow); }
 .bar .area-btn:active { box-shadow: 2px 1px 5px var(--shade), -2px -1px 5px var(--glow); transform: scale(.985); }
 .bar .area-btn.on { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
@@ -962,7 +968,7 @@ body.kb .tabbar { display: none; }
 
   /* ---------- aparência ---------- */
   var THEME_KEY = 'cartas-a-mao-tema';
-  function themePref() { var v = lsGet(THEME_KEY); return v === 'light' || v === 'dark' ? v : 'system'; }
+  function themePref() { var v = lsGet(THEME_KEY); return v === 'system' || v === 'dark' ? v : 'light'; }
   function applyTheme(v) {
     var root = document.documentElement;
     if (v === 'light' || v === 'dark') root.setAttribute('data-theme', v); else root.removeAttribute('data-theme');
@@ -970,7 +976,7 @@ body.kb .tabbar { display: none; }
   }
   function settingsSheet() {
     var cur = themePref();
-    var opts = [['system', 'Sistema'], ['light', 'Claro'], ['dark', 'Escuro']];
+    var opts = [['light', 'Claro'], ['dark', 'Escuro'], ['system', 'Sistema']];
     var seg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Aparência' });
     opts.forEach(function (o, idx) {
       var b = h('button', { 'aria-pressed': String(cur === o[0]) }, o[1]);
@@ -1634,11 +1640,11 @@ body.kb .tabbar { display: none; }
 
     /* Atalho entre os dois modos de estudo, sem passar pela escolha de novo. */
     function modeBtn(m, label) {
-      return h('button', { 'aria-pressed': String(mode === m), onclick: function () {
+      return h('button', { class: 'led-toggle pill', 'aria-pressed': String(mode === m), onclick: function () {
         if (mode === m) return;
         flushLevels();
         go('study', { deckId: deck.id, mode: m, only: review ? state.only : undefined });
-      } }, label);
+      } }, h('i', { 'aria-hidden': 'true' }), label);
     }
     var DIRS = { normal: 'Normal', rev: 'Invertido', mix: 'Misto' };
     var dirBtn = h('button', { class: 'led-toggle pill', 'aria-label': 'Mudar o sentido do estudo (agora: ' + DIRS[dir] + ')', onclick: function () {
@@ -1648,7 +1654,7 @@ body.kb .tabbar { display: none; }
       if (mode === 'baralho' && !ended) dirSession.keep = { order: order.map(function (i) { return cards[i].id; }), pos: pos, results: results, shuffled: shuffled };
       go('study', { deckId: deck.id, mode: mode, only: review ? state.only : undefined });
     } }, 'Sentido');
-    var segEl = isPreview(deck.id) ? '' : h('div', { class: 'seg', role: 'group', 'aria-label': 'Modo de estudo' }, modeBtn('mesa', 'Mesa'), modeBtn('baralho', 'Baralho'));
+    var segEl = isPreview(deck.id) ? '' : h('div', { class: 'seg2', role: 'group', 'aria-label': 'Modo de estudo' }, modeBtn('mesa', 'Mesa'), modeBtn('baralho', 'Baralho'));
     var modeRow = h('div', { class: 'modeswitch' }, segEl, sideBtn || (segEl ? h('span', { class: 'pill', 'aria-hidden': 'true', style: 'visibility:hidden' }) : ''), dirBtn);
     if (libItem) modeRow.append(downloadBtn('led-toggle pill dl'));
     var testRow = '';
